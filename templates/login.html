@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <title>Login | Ai Blog App</title>
+  </head>
+  <body>
+    <nav class="p-4 text-white bg-blue-600 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Ai Blog Generator</h1>
+      <div class="flex gap-5 mr-9 items-center">
+        <a href="/signup" class="font-semibold hover:underline">Signup</a>
+      </div>
+    </nav>
+    <div class="bg-gray-100 flex justify-center items-center h-screen">
+      <form
+        action=""
+        method="post"
+        class="bg-white rounded-lg shadow-md p-6 mx-auto max-w-md w-full border"
+      >
+        {% csrf_token %} {%if error_message %}
+        <p class="text-red-500 text-center">{{error_message}}</p>
+        {%endif%}
+        <!-- <div class="bg-blue-600"> -->
+        <h1 class="text-2xl font-bold text-gray-700 text-center mb-7">Login</h1>
+        <!-- </div> -->
+
+        <div class="flex flex-col mb-5">
+          <label class="text-xl font-semibold text-gray-800 mb-2"
+            >Username/Email</label
+          >
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder=" Enter your Username"
+            class="border p-3 rounded-lg"
+          />
+        </div>
+        <div class="flex flex-col mb-5">
+          <label class="text-xl font-semibold text-gray-800 mb-2"
+            >Password</label
+          >
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder=" Enter your Password"
+            class="border p-3 rounded-lg"
+          />
+        </div>
+        <button
+          type="submit"
+          class="bg-blue-600 p-3 text-white rounded-lg font-bold w-full hover:bg-blue-700"
+          onclick
+        >
+          Login
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

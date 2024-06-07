@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+
+    <title>Ai Blog App</title>
+  </head>
+  <body class="bg-gray-100">
+    <nav class="p-4 text-white bg-blue-600 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Ai Blog Generator</h1>
+      <div class="flex gap-5 mr-9 items-center">
+        <p class="font-semibold">Welcome {{user.first_name}}</p>
+
+        <a href="logout" class="font-semibold hover:underline">Logout</a>
+      </div>
+    </nav>
+
+    <div class="bg-white rounded-lg shadow-md p-6 mx-auto max-w-3xl m-9">
+      <h2 class="text-2xl font-semibold text-gray-800 text-center mb-5">
+        Generate a blog from a Youtube video
+      </h2>
+      <p class="text-lg text-center text-gray-600">
+        This app helps you generate high quality blogs and articles from a
+        youtube video with in seconds. Paste a youtube link of your choice and
+        give it a try
+      </p>
+
+      <div class="mt-5 flex gap-3">
+        <!-- <label>Enter a link</label> -->
+        <input
+          type="text"
+          id="youtube_link"
+          placeholder="Paste youtube link"
+          class="border text-lg p-3 flex-grow rounded-l-lg"
+        />
+        <button
+          id="generate-blog"
+          type="submit"
+          class="bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-r-lg p-3"
+        >
+          Generate
+        </button>
+      </div>
+      <!--spinner-->
+      <div class="hidden p-3" id="spinner">
+        <p class="text-2xl text-center font-semibold">Loading...</p>
+      </div>
+      <!--spinner end-->
+
+      <!--blog post-->
+      <div class="mt-6" id="blog_post">
+        <h2 class="text-xl font-semibold text-gray-800 mb-3"></h2>
+        <p class="text-gray-700" id="videoName"></p>
+
+        <form class="hidden" id="select" method="post" action="">
+          {% csrf_token %}
+          <select id="quality" name="quality" class="p-3"></select>
+          <button
+            id="download"
+            type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-lg p-2"
+          >
+            Download
+          </button>
+        </form>
+      </div>
+      <!--blog post end-->
+    </div>
+    <script>
+      document
+        .getElementById("generate-blog")
+        .addEventListener("click", async () => {
+          const youtubeLink = document.getElementById("youtube_link").value;
+          const blogPost = document.getElementById("videoName");
+          const spinner = document.getElementById("spinner");
+          const quality = document.getElementById("quality");
+          const select = document.getElementById("select");
+
+          if (youtubeLink) {
+            spinner.classList.remove("hidden");
+            select.classList.add("hidden");
+            blogPost.innerHTML = "";
+
+            const enpointURL = "generate-blog";
+            try {
+              const response = await fetch(enpointURL, {
+                method: "POST",
+                headers: {
+                  "content-type": "application/json",
+                },
+                body: JSON.stringify({ link: youtubeLink }),
+              });
+              const data = await response.json();
+              console.log(data);
+
+              blogPost.textContent = data.vid_title;
+
+              spinner.classList.add("hidden");
+
+              for (const i of data.qual) {
+                if (i !== null) {
+                  quality.innerHTML += `<option>${i}</option>`;
+                }
+              }
+              select.classList.remove("hidden");
+            } catch (error) {
+              console.error("error occuredd:", error);
+              alert("something went wrong. Please try again");
+              spinner.classList.add("hidden");
+            }
+          }
+        });
+
+      document
+        .getElementById("download")
+        .addEventListener("click", async () => {
+          const quality = document.getElementById("quality").value;
+          console.log(quality);
+          if (quality) {
+            spinner.classList.remove("hidden");
+            const downloadURL = "/qualitylink";
+            try {
+              const response = await fetch(downloadURL, {
+                method: "POST",
+                headers: {
+                  "content-type": "application/json",
+                  "X-CSRFToken": csrfToken,
+                },
+                body: JSON.stringify({ quality: quality }),
+              });
+              spinner.classList.add("hidden");
+              console.log(quality);
+              const value = await response.json;
+            } catch (error) {
+              console.error("error downloading", error);
+              console.log(quality);
+              spinner.classList.add("hidden");
+            }
+          }
+        });
+      //if link is present filter spinner classlist hidden and append block
+      //empty the blog content
+      //create backend endpoint and sent a request try response fetch await (enpoint,{method, headers,})
+    </script>
+  </body>
+</html>
